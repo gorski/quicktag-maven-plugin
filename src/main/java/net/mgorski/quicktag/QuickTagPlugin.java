@@ -13,39 +13,35 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 /**
- * Quicktag Maven Plugin.
- * This plugin provides robust way build info of your git or svn repository inside application.
- *
+ * Quicktag Maven Plugin. This plugin provides robust way build info of your git or svn repository inside application.
+ * <p/>
  * See projects description at <a href="mgorki.net/projects/quicktag">project's page</a>
- *
  *
  * @author Marcin Gorski (mgorski.net)
  * @goal quicktag
- * @phase process-sources
+ * @phase generate-sources
  */
 public class QuickTagPlugin extends AbstractMojo {
 
   /**
-   * Relative GIT path. Depending on the plugin location (module, submodule, etc.)
-   * it might be necessary to provide full path to the repository.
-   * Default value: <code>.git</code>
+   * Relative GIT path. Depending on the plugin location (module, submodule, etc.) it might be necessary to provide full
+   * path to the repository. Default value: <code>.git</code>
    *
    * @parameter expression="${git.path}" default-value=".git"
    */
   private String gitPath = ".git";
 
   /**
-   * Relative SVN path. Depending on the plugin location (module, submodule, etc.)
-   * it might be necessary to provide full path to the repository.
-   * Default value: <code>.svn</code>
+   * Relative SVN path. Depending on the plugin location (module, submodule, etc.) it might be necessary to provide full
+   * path to the repository. Default value: <code>.svn</code>
    *
    * @parameter expression="${svn.path}" default-value=".svn"
    */
   private String svnPath = ".svn";
 
   /**
-   * Output package. The package where the files will be created. For each supported version controll
-   * separate java class will be created in this package.
+   * Output package. The package where the files will be created. For each supported version control system, a separate
+   * Java class will be created in this package.
    *
    * @parameter expression="${output.package}"
    * @required
@@ -54,14 +50,13 @@ public class QuickTagPlugin extends AbstractMojo {
 
 
   /**
-   * Output directory. Base directory for the created files - by default it's
-   * <code>${project.basedir}/src/main/java/</code> - generated files will be placed inside
-   * sources, so they can be used inside your IDE during development. Feel free to write directly
-   * to the <code>target/</code> if you prefer to see the files only in the final package.
+   * Output directory. Base directory for the created files - by default it's <code>${project.basedir}/src/main/java/</code>
+   * - generated files will be placed inside sources, so they can be used inside your IDE during development. Feel free
+   * to write directly to the <code>target/</code> if you prefer to see the files only in the final package.
    *
    * @parameter expression="${project.basedir}/src/main/java/"
    */
-  private File outputDirectory;
+  private String outputDirectory;
 
   /**
    * Project name.
@@ -101,13 +96,12 @@ public class QuickTagPlugin extends AbstractMojo {
    * @throws MojoExecutionException
    */
   public void execute() throws MojoExecutionException {
-
     getLog().info("QuickTag plugin is running.");
 
     buildTime = Utils.getTimestampString();
     getLog().info("Build timestamp : " + buildTime);
 
-    OsProxy osBridge = new OsProxy(gitPath, svnPath);
+    OsProxy osBridge = new OsProxy(gitPath);
     // try GIT
     try {
       processGitRepository(osBridge);
@@ -130,11 +124,10 @@ public class QuickTagPlugin extends AbstractMojo {
       history.setBuildTime(buildTime);
       history.setDescribeString(gitString);
       createOutputVersionFile(history, "GitVersion");
-      getLog().info("GIT ("+gitPath+"): Success, version: " + history.getDescribeString());
+      getLog().info("GIT (" + gitPath + "): Success, version: " + history.getDescribeString());
     } else {
-      getLog().info("GIT ("+gitPath+"): Does not exist or cannot be described.");
+      getLog().info("GIT (" + gitPath + "): Does not exist or cannot be described.");
     }
-
   }
 
   private void processSvnRepository(OsProxy osBridge) throws MojoExecutionException {
@@ -146,11 +139,11 @@ public class QuickTagPlugin extends AbstractMojo {
         history.setBuildTime(buildTime);
         history.setDescribeString(versionNo);
         createOutputVersionFile(history, "SvnVersion");
-        getLog().info("SVN ("+svnPath+"): Success, version: " + history.getDescribeString());
+        getLog().info("SVN (" + svnPath + "): Success, version: " + history.getDescribeString());
         return;
       }
     }
-    getLog().info("SVN ("+svnPath+"): Does not exist or cannot retrieve info.");
+    getLog().info("SVN (" + svnPath + "): Does not exist or cannot retrieve info.");
   }
 
   /**
@@ -160,20 +153,23 @@ public class QuickTagPlugin extends AbstractMojo {
    * @param className
    */
   private void createOutputVersionFile(HistoryEntry history, String className) {
-    String packageAsPath = outputPackage.replace(".", "/");
-    String outputPath = outputDirectory + "/" + packageAsPath + "/" + className + ".java";
-    getLog().info("Creating file:" + outputPath);
+    final String outputDir = outputDirectory.endsWith("/") ? outputDirectory : outputDirectory + File.separator;
+    final String packageAsPathName = outputDir + outputPackage.replace(".", File.separator);
+    final File packagePath = new File(packageAsPathName);
+    packagePath.mkdirs();
+    final String outputPath = packageAsPathName + File.separator + className + ".java";
+
+    getLog().info("Creating file: " + outputPath);
     File outFile = new File(outputPath);
     if (!outFile.exists()) {
       try {
         outFile.createNewFile();
       } catch (IOException e) {
-        getLog().error("Cannot create file:" + e.getMessage());
+        getLog().error("Cannot create file: " + e.getMessage());
       }
     }
 
     if (outFile.exists() && outFile.canWrite()) {
-
       String output = createOutputClassContent(className, outputPackage, history);
       try {
         FileWriter fileWriter = new FileWriter(outFile);
@@ -186,16 +182,15 @@ public class QuickTagPlugin extends AbstractMojo {
     } else {
       getLog().error("File or location not writable: " + outputPath);
     }
-
-
   }
 
   /**
    * Creates output file content.
    *
-   * @param className name of the class (and file)
+   * @param className     name of the class (and file)
    * @param outputPackage output package
-   * @param historyEntry bean
+   * @param historyEntry  bean
+   *
    * @return content of the file (unicode string)
    */
   private String createOutputClassContent(String className, String outputPackage, HistoryEntry historyEntry) {

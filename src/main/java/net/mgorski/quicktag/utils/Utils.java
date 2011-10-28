@@ -34,11 +34,9 @@ public class Utils {
       return null;
     }
 
-    int index = output.lastIndexOf("revision=");
-    if (index > 0) {
-      String sub = output.substring(index + 10);
-      sub = sub.substring(0, sub.indexOf("\""));
-      return sub;
+    int versionIndex = output.lastIndexOf("revision=") + 10;
+    if (versionIndex > 10) {
+      return output.substring(versionIndex, output.indexOf("\"", versionIndex));
     }
     return null;
   }
