@@ -4,7 +4,7 @@
   <groupId>net.mgorski.quicktag</groupId>
   <artifactId>quicktag</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.0.3-BEHA-SNAPSHOT</version>
+  <version>1.0.4</version>
   <name>Quicktag Maven plugin. (mgorski.net/projects/quicktag)</name>
   <url>mgorski.net/projects/quicktag</url>
   <dependencies>
@@ -98,7 +98,7 @@
       <distributionManagement>
         <repository>
           <id>mgorski-ftp</id>
-          <url>ftp://mgorski.net/var/www/maven2</url>
+          <url>ftp://mgorski.net/maven2</url>
         </repository>
       </distributionManagement>
     </profile>
