@@ -35,7 +35,7 @@ public class OsProxy {
   public String executeGitDescribe() throws MojoExecutionException {
     List<String> osArgs = buildVcsCommandLine("git");
     List<String> fullArgs = new LinkedList<String>(osArgs);
-    fullArgs.addAll(Arrays.asList("--git-dir=" + gitPath, "describe"));
+    fullArgs.addAll(Arrays.asList("--git-dir=" + gitPath, "describe", "--always", "--dirty"));
     return execute(fullArgs);
   }
 
