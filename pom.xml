@@ -4,7 +4,7 @@
   <groupId>net.mgorski.quicktag</groupId>
   <artifactId>quicktag</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.0.3-BEHA-SNAPSHOT</version>
+  <version>2.0.0-SNAPSHOT</version>
   <name>Quicktag Maven plugin. (mgorski.net/projects/quicktag)</name>
   <url>mgorski.net/projects/quicktag</url>
   <dependencies>
@@ -40,7 +40,7 @@
       <plugin>
         <groupId>net.mgorski.quicktag</groupId>
         <artifactId>quicktag</artifactId>
-        <version>1.0.3-BEHA-SNAPSHOT</version>
+        <version>2.0.0-SNAPSHOT</version>
         <executions>
           <execution>
             <phase>generate-sources</phase>
