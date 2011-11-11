@@ -5,8 +5,8 @@
   <artifactId>quicktag</artifactId>
   <packaging>maven-plugin</packaging>
   <version>2.0.0-SNAPSHOT</version>
-  <name>Quicktag Maven plugin. (mgorski.net/projects/quicktag)</name>
-  <url>mgorski.net/projects/quicktag</url>
+  <name>Quicktag Maven Plugin</name>
+  <url>http://mgorski.net/projects/quicktag</url>
   <dependencies>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -37,32 +37,6 @@
         </configuration>
       </plugin>
 
-      <plugin>
-        <groupId>net.mgorski.quicktag</groupId>
-        <artifactId>quicktag</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>quicktag</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <!-- optional -->
-          <!--<gitPath>.git</gitPath>-->
-          <!-- optional -->
-          <!--<svnPath>.svn</svnPath>-->
-
-          <!-- required, must exist -->
-          <outputPackage>net.mgorski.output</outputPackage>
-
-          <!-- optional, for multi module projects -->
-          <outputDirectory>${project.basedir}/src/main/java/</outputDirectory>
-        </configuration>
-      </plugin>
-
     </plugins>
     <extensions>
       <!-- Allows deploy to the FTP location -->
@@ -73,6 +47,7 @@
       </extension>
     </extensions>
   </build>
+
 
   <repositories>
     <repository>
@@ -101,6 +76,38 @@
           <url>ftp://mgorski.net/var/www/maven2</url>
         </repository>
       </distributionManagement>
+    </profile>
+    <profile>
+      <id>self-test</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>net.mgorski.quicktag</groupId>
+            <artifactId>quicktag</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+            <executions>
+              <execution>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>quicktag</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <!-- optional -->
+              <!--<gitPath>.git</gitPath>-->
+              <!-- optional -->
+              <!--<svnPath>.svn</svnPath>-->
+
+              <!-- required, must exist -->
+              <outputPackage>net.mgorski.output</outputPackage>
+
+              <!-- optional, for multi module projects -->
+              <outputDirectory>${project.basedir}/src/main/java/</outputDirectory>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 </project>
