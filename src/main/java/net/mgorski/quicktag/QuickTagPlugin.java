@@ -42,7 +42,7 @@ public class QuickTagPlugin extends AbstractMojo
    */
   public void execute() throws MojoExecutionException {
     BuildServerBuildInformationGatherer buildServerInfoGatherer = new ChainingBuildServerGatherer(new
-        AtlassianBambooBuildInfoGatherer(bambooBuildPlanName, bambooBuildNumber, bambooBuildTimeStamp));
+        AtlassianBambooBuildInfoGatherer(bambooBuildKey, bambooBuildNumber, bambooBuildTimeStamp));
     VcsBuildInformationGatherer vcsInfoGatherer = new ChainingVcsGatherer(new Git17VcsInfoGatherer(gitBinary, gitPath));
     BuildInfoEmitter emitter =
         new ChainingBuildInfoEmitter(
@@ -91,11 +91,11 @@ public class QuickTagPlugin extends AbstractMojo
 
   /**
    * The Atlassian Bamboo project. This does not get set automatically; rather, you have to put this in your maven goal
-   * in the build plan's configuration: <code>-Dbamboo.buildPlanName=${bamboo.buildPlanName}</code>
+   * in the build plan's configuration: <code>-Dbamboo.buildKey=${bamboo.buildKey}</code>
    *
-   * @parameter expression="${bamboo.buildPlanName}"
+   * @parameter expression="${bamboo.buildKey}"
    */
-  private String bambooBuildPlanName;
+  private String bambooBuildKey;
 
   /**
    * The Atlassian Bamboo build number. This does not get set automatically; rather, you have to put this in your maven
