@@ -21,9 +21,9 @@ public class AtlassianBambooBuildInfoGatherer implements BuildServerBuildInforma
   private final String bambooBuildNumber;
   private final String bambooBuildTimeStamp;
 
-  public AtlassianBambooBuildInfoGatherer(String bambooBuildPlanName, String bambooBuildNumber,
+  public AtlassianBambooBuildInfoGatherer(String bambooBuildKey, String bambooBuildNumber,
                                           String bambooBuildTimeStamp) {
-    this.bambooBuildPlanName = bambooBuildPlanName;
+    this.bambooBuildPlanName = bambooBuildKey.replaceFirst("-\\d+$", "");
     this.bambooBuildNumber = bambooBuildNumber;
     this.bambooBuildTimeStamp = bambooBuildTimeStamp;
   }
