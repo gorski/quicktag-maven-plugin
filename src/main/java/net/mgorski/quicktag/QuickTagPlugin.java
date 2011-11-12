@@ -1,22 +1,13 @@
 package net.mgorski.quicktag;
 
 
-import net.mgorski.quicktag.api.BuildInfoEmitter;
-import net.mgorski.quicktag.api.BuildServerBuildInfo;
-import net.mgorski.quicktag.api.BuildServerBuildInformationGatherer;
-import net.mgorski.quicktag.api.MavenBuildInfo;
-import net.mgorski.quicktag.api.MavenBuildInformationGatherer;
-import net.mgorski.quicktag.api.SelfGeneratedBuildInfo;
-import net.mgorski.quicktag.api.SelfGeneratedBuildInfoGatherer;
-import net.mgorski.quicktag.api.VcsBuildInfo;
-import net.mgorski.quicktag.api.VcsBuildInformationGatherer;
+import net.mgorski.quicktag.api.*;
 import net.mgorski.quicktag.buildserver.atlassianbamboo.AtlassianBambooBuildInfoGatherer;
 import net.mgorski.quicktag.chaining.ChainingBuildInfoEmitter;
 import net.mgorski.quicktag.chaining.ChainingBuildServerGatherer;
-import net.mgorski.quicktag.chaining.ChainingVcsGatherer;
 import net.mgorski.quicktag.emission.VersionClassBasedBuildInfoEmitter;
 import net.mgorski.quicktag.utils.Utils;
-import net.mgorski.quicktag.vcs.git.Git17VcsInfoGatherer;
+import net.mgorski.quicktag.vcs.Vcs;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
@@ -41,9 +32,37 @@ public class QuickTagPlugin extends AbstractMojo
    * @throws MojoExecutionException
    */
   public void execute() throws MojoExecutionException {
-    BuildServerBuildInformationGatherer buildServerInfoGatherer = new ChainingBuildServerGatherer(new
+
+    Vcs activeVcs = Vcs.fromString(this.vcs);
+    if (activeVcs == null){
+      getLog().error("VCS has not been set. Please set <vcs> parameter to the correct VCS.");
+      getLog().error("Currently supported values: SVN, GIT");
+      return;
+    } else {
+      getLog().info(String.format("Maven Quicktag Plugin running with %s version control system.", activeVcs));
+    }
+    VcsInfoGatherer vcsInfoGatherer = activeVcs.getVcsInfoGatherer();
+
+    if (vcsBinaryPath!= null ) {
+      System.out.println("---"+vcsBinaryPath.getClass());
+      getLog().debug(String.format("Using %s for vcs binary", vcsBinaryPath));
+      vcsInfoGatherer.setVcsBinaryPath(vcsBinaryPath);
+    }
+    if (vcsRepositoryPath != null){
+      getLog().debug(String.format("Using %s for VCS repository path", vcsRepositoryPath));
+      vcsInfoGatherer.setVcsPath(vcsRepositoryPath);
+    }
+    getLog().info("Gathering information from the version control system: "+ vcs);
+    VcsBuildInfo vcsInfo = vcsInfoGatherer.gatherVcsBuildInfo(getLog());
+
+    BuildServerBuildInformationGatherer buildServerInfoGatherer = null;
+    if (bambooBuildKey != null && bambooBuildNumber != null && bambooBuildTimeStamp != null){
+       buildServerInfoGatherer = new ChainingBuildServerGatherer(new
         AtlassianBambooBuildInfoGatherer(bambooBuildKey, bambooBuildNumber, bambooBuildTimeStamp));
-    VcsBuildInformationGatherer vcsInfoGatherer = new ChainingVcsGatherer(new Git17VcsInfoGatherer(gitBinary, gitPath));
+    } else {
+      getLog().info("Not using build server (Bamboo) configuration.");
+    }
+
     BuildInfoEmitter emitter =
         new ChainingBuildInfoEmitter(
             new VersionClassBasedBuildInfoEmitter(outputPackage, outputDirectory, versionClassName));
@@ -58,15 +77,15 @@ public class QuickTagPlugin extends AbstractMojo
     getLog().info("Gathering information from maven...");
     MavenBuildInfo mavenInfo = gatherMavenBuildInfo(getLog());
 
-    getLog().info("Gathering information from build server...");
-    BuildServerBuildInfo buildServerInfo = buildServerInfoGatherer.gatherBuildServerInfo(getLog());
-    getLog().info("Gathering information from version control system...");
-    VcsBuildInfo vcsInfo = vcsInfoGatherer.gatherVcsBuildInfo(getLog());
+    BuildServerBuildInfo buildServerInfo = null;
+    if (buildServerInfoGatherer  != null){
+      getLog().info("Gathering information from build server...");
+       buildServerInfo= buildServerInfoGatherer.gatherBuildServerInfo(getLog());
+    }
 
     getLog().info("Now writing build information...");
     emitter.writeBuildInformation(getLog(), buildServerInfo, vcsInfo, mavenInfo, quicktagInfo);
 
-    // try SVN
     getLog().debug("Quicktag plugin finished execution.");
   }
 
@@ -93,7 +112,7 @@ public class QuickTagPlugin extends AbstractMojo
    * The Atlassian Bamboo project. This does not get set automatically; rather, you have to put this in your maven goal
    * in the build plan's configuration: <code>-Dbamboo.buildKey=${bamboo.buildKey}</code>
    *
-   * @parameter expression="${bamboo.buildKey}"
+   * @parameter expression="${bamboo.buildKey}" default=null
    */
   private String bambooBuildKey;
 
@@ -101,7 +120,7 @@ public class QuickTagPlugin extends AbstractMojo
    * The Atlassian Bamboo build number. This does not get set automatically; rather, you have to put this in your maven
    * goal in the build plan's configuration: <code>-Dbamboo.buildNumber=${bamboo.buildNumber}</code>
    *
-   * @parameter expression="${bamboo.buildNumber}"
+   * @parameter expression="${bamboo.buildNumber}" default=null
    */
   private String bambooBuildNumber;
 
@@ -109,43 +128,29 @@ public class QuickTagPlugin extends AbstractMojo
    * The Atlassian Bamboo build timestamp. This does not get set automatically; rather, you have to put this in your
    * maven goal in the build plan's configuration: <code>-Dbamboo.buildTimeStamp=${bamboo.buildTimeStamp}</code>
    *
-   * @parameter expression="${bamboo.buildTimeStamp}"
+   * @parameter expression="${bamboo.buildTimeStamp}" default=null
    */
   private String bambooBuildTimeStamp;
 
   // ----------------------------------------------------------------------------------------------------------------
   // ----------------------------------------------------------------------------------------------------------------
-  // used by the git vcs info gatherer
+  // used by the vcs info gatherer
 
   /**
-   * Relative GIT path. Depending on the plugin location (module, submodule, etc.) it might be necessary to provide full
-   * path to the repository. Default value: <code>.git</code>
+   * Path to the binary of the active VCS. <code>null</code> if left default.
    *
-   * @parameter expression="${git.path}" default-value=".git"
+   * @parameter expression="${vcs.path}" default-value=""
    */
   @SuppressWarnings({"UnusedDeclaration"})
-  private String gitPath;
+  private String vcsRepositoryPath;
 
   /**
-   * Path to the git binary. Default value: <code>git</code>
+   * Path to the binary of the active VCS. <code>null</code> if left default.
    *
-   * @parameter expression="${git.binary}" default-value="git"
+   * @parameter expression="${vcs.binary}" default-value=""
    */
   @SuppressWarnings({"UnusedDeclaration"})
-  private String gitBinary;
-
-  // ----------------------------------------------------------------------------------------------------------------
-  // ----------------------------------------------------------------------------------------------------------------
-  // used by the (future) svn vcs info gatherer
-
-  /**
-   * Relative SVN path. Depending on the plugin location (module, submodule, etc.) it might be necessary to provide full
-   * path to the repository. Default value: <code>.svn</code>
-   *
-   * @parameter expression="${svn.path}" default-value=".svn"
-   */
-  @SuppressWarnings({"UnusedDeclaration"})
-  private String svnPath;
+  private String vcsBinaryPath;
 
   // ----------------------------------------------------------------------------------------------------------------
   // ----------------------------------------------------------------------------------------------------------------
@@ -218,6 +223,17 @@ public class QuickTagPlugin extends AbstractMojo
    */
   @SuppressWarnings({"UnusedDeclaration"})
   private String projectGroupId;
+
+
+  /**
+   * Active VCS (default: git).
+   * Specifies implicitly which VCS to use.
+   * <p>
+   * Available choices: <code>git</code>, <code>svn</code>
+   *
+   * @parameter expression="${vcs}" default-value="git" 
+   */
+  private String vcs;
 
   // ----------------------------------------------------------------------------------------------------------------
   // ----------------------------------------------------------------------------------------------------------------

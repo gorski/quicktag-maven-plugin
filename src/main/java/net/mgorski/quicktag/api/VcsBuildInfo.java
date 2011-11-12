@@ -25,7 +25,7 @@ public class VcsBuildInfo {
    * @param workingCopyDirty       Whether the working copy is in a state that can be exactly checked out from a source
    *                               code repository.
    * @param version                The version of the source code that we are building, according to the VCS.
-   * @param branch                 The VCS branch that we are on.
+   * @param branch                 The VCS branch that we are on (optional)
    */
   public VcsBuildInfo(String workingCopyInformation, Boolean workingCopyDirty, String version, String branch) {
     this.workingCopyInformation = workingCopyInformation;

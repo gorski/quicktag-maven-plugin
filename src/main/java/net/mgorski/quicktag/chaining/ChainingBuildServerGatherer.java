@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * VCS-based build information gatherer that can be constructed with different {@link net.mgorski.quicktag.api
- * .VcsBuildInformationGatherer} instances, which it uses to actually gather build information.
+ * .VcsInfoGatherer} instances, which it uses to actually gather build information.
  *
  * @author bhaug
  * @since 2.0.0

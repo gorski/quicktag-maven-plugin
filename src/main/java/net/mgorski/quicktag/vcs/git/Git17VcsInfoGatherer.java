@@ -5,7 +5,7 @@
 package net.mgorski.quicktag.vcs.git;
 
 import net.mgorski.quicktag.api.VcsBuildInfo;
-import net.mgorski.quicktag.api.VcsBuildInformationGatherer;
+import net.mgorski.quicktag.api.VcsInfoGatherer;
 import org.apache.maven.plugin.logging.Log;
 
 import java.io.File;
@@ -18,19 +18,19 @@ import static net.mgorski.quicktag.utils.Utils.buildPlatformCommandLine;
 import static net.mgorski.quicktag.utils.Utils.execute;
 
 /**
- * Implements the VcsBuildInformationGatherer.
+ * Implements the VcsInfoGatherer.
  *
  * @author bhaug
  * @since 2.0.0
  */
-public class Git17VcsInfoGatherer implements VcsBuildInformationGatherer {
+public class Git17VcsInfoGatherer implements VcsInfoGatherer {
 
-  private final String gitBinary;
-  private final String gitPath;
+  private String gitBinary;
+  private String gitRepositoryPath;
 
-  public Git17VcsInfoGatherer(String gitBinary, String gitPath) {
-    this.gitBinary = gitBinary;
-    this.gitPath = gitPath;
+  public Git17VcsInfoGatherer() {
+    gitBinary = "git";
+    gitRepositoryPath = ".git";
   }
 
   /**
@@ -43,7 +43,7 @@ public class Git17VcsInfoGatherer implements VcsBuildInformationGatherer {
     List<String> osArgs = buildPlatformCommandLine(gitBinary);
 
     List<String> describeArgs = new LinkedList<String>(osArgs);
-    describeArgs.addAll(Arrays.asList("--git-dir=" + gitPath, "describe", "--always", "--dirty"));
+    describeArgs.addAll(Arrays.asList("--git-dir=" + gitRepositoryPath, "describe", "--always", "--dirty"));
 
     String gitDescribeOutput;
     try {
@@ -52,10 +52,12 @@ public class Git17VcsInfoGatherer implements VcsBuildInformationGatherer {
       return null;
     }
 
-    File workingCopy = new File(gitPath + File.separator + "..");
+    File workingCopy = new File(gitRepositoryPath + File.separator + "..");
     String wdPath = null;
     try {
       wdPath = workingCopy.getCanonicalPath();
+      // for Windows systems - escape backslashes
+      wdPath = wdPath.replace("\\","/");
     } catch (IOException e) {
       return null;
     }
@@ -68,7 +70,7 @@ public class Git17VcsInfoGatherer implements VcsBuildInformationGatherer {
 
     String branchName = null;
     List<String> showBranchArgs = new LinkedList<String>(osArgs);
-    showBranchArgs.addAll(Arrays.asList("--git-dir=" + gitPath, "symbolic-ref", "HEAD"));
+    showBranchArgs.addAll(Arrays.asList("--git-dir=" + gitRepositoryPath, "symbolic-ref", "HEAD"));
     try {
       branchName = execute(showBranchArgs);
       branchName = branchName.split("/")[2];
@@ -77,5 +79,16 @@ public class Git17VcsInfoGatherer implements VcsBuildInformationGatherer {
     }
 
     return new VcsBuildInfo(wdPath, dirty, gitDescribeOutput, branchName);
+  }
+
+
+  @Override
+  public void setVcsBinaryPath(String vcsBinary) {
+    this.gitBinary = vcsBinary;
+  }
+
+  @Override
+  public void setVcsPath(String vcsPath) {
+    this.gitRepositoryPath = vcsPath;
   }
 }

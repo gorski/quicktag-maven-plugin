@@ -27,6 +27,7 @@ public class VersionClassBasedBuildInfoEmitter implements BuildInfoEmitter {
   private final String outputPackage;
   private final String outputDirectory;
   private final String className;
+  private static final String NA = "N/A";
 
   public VersionClassBasedBuildInfoEmitter(String outputPackage, String outputDirectory, String versionClassName) {
     this.outputPackage = outputPackage;
@@ -70,21 +71,29 @@ public class VersionClassBasedBuildInfoEmitter implements BuildInfoEmitter {
       }
 
       String bannerDirtyString = "";
-      if (sourceDirty != null && sourceDirty) {
-        bannerDirtyString = " !!! WARNING: GENERATED FROM A WORKING DIRECTORY WITH CHANGES !!!";
+      if (Boolean.TRUE.equals(sourceDirty)) {
+        bannerDirtyString = " (dirty-wd) ";
       }
 
-      String banner = String.format("Build info: %s version %s built on %s source version %s, build id: %s-%s.%s",
+      final String detailed_banner = String.format("Build info: %s version %s built on %s source version %s, build id: %s-%s.%s",
           mavenInfo.getName(), mavenInfo.getVersion(), quicktagInfo.getDate(), vcsInfo.getVersion(),
-          buildServerInfo.getBuildPlan(), buildServerInfo.getBuildId(), bannerDirtyString);
+          buildServerInfo == null ? NA :buildServerInfo.getBuildPlan() ,
+          buildServerInfo == null ? NA : buildServerInfo.getBuildId(),
+          bannerDirtyString);
 
+      final String banner = String.format("%s-%s %s ",
+        mavenInfo.getVersion(),
+        Boolean.TRUE.equals(sourceDirty) ? vcsInfo.getVersion() +"**" : vcsInfo.getVersion(),
+        quicktagInfo.getDate()
+      );
+      
       String output = String.format(
           "package %s;\n" +
               "\n" +
               "/**\n" +
               " * Auto-generated file, contains project and version control state info.\n" +
               " */\n" +
-              "public class %s {\n" +
+              "public final class %s {\n" +
               "  public static String PLUGIN_BUILD_TIME = \"%s\";\n" +
               "\n" +
               "  public static String PROJECT_NAME = \"%s\";\n" +
@@ -101,14 +110,19 @@ public class VersionClassBasedBuildInfoEmitter implements BuildInfoEmitter {
               "  public static String SERVER_BUILD_ID = \"%s\";\n" +
               "  public static String SERVER_BUILD_TIME = \"%s\";\n" +
               "\n" +
+              "  public static String BANNER_FULL = \"%s\";\n" +
               "  public static String BANNER = \"%s\";\n" +
               "}\n",
           outputPackage, className,
           quicktagInfo.getDate(),
           mavenInfo.getName(), mavenInfo.getGroupId(), mavenInfo.getArtifactId(), mavenInfo.getVersion(),
           vcsInfo.getVersion(), vcsInfo.getBranch(), sourceDirtyString, vcsInfo.getWorkingCopyInformation(),
-          buildServerInfo.getBuildPlan(), buildServerInfo.getBuildId(), buildServerInfo.getServerBuildTime(),
-          banner);
+          buildServerInfo == null ? NA : buildServerInfo.getBuildPlan(),
+          buildServerInfo == null ? NA : buildServerInfo.getBuildId(),
+          buildServerInfo == null ? NA : buildServerInfo.getServerBuildTime(),
+          detailed_banner,
+          banner
+      );
       try {
         FileWriter fileWriter = new FileWriter(outFile);
         BufferedWriter out = new BufferedWriter(fileWriter);
