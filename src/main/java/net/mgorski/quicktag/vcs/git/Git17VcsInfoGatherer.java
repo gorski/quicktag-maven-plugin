@@ -74,7 +74,9 @@ public class Git17VcsInfoGatherer implements VcsInfoGatherer {
     try {
       branchName = execute(showBranchArgs);
       branchName = branchName.split("/")[2];
-    } catch (IOException e) {
+    } catch (IOException e){
+      // intentionally left blank. if anything goes wrong, we just don't have this, bfd.  
+    } catch (RuntimeException e) {
       // intentionally left blank. if anything goes wrong, we just don't have this, bfd.
     }
 
