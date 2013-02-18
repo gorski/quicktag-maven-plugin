@@ -8,3 +8,6 @@
 target/
 .DS_Store
 src/main/java/net/mgorski/output/
+.idea
+
+atlassian-ide-plugin.xml

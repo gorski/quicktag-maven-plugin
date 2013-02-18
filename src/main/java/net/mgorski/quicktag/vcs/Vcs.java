@@ -2,6 +2,7 @@ package net.mgorski.quicktag.vcs;
 
 import net.mgorski.quicktag.api.VcsInfoGatherer;
 import net.mgorski.quicktag.vcs.git.Git17VcsInfoGatherer;
+import net.mgorski.quicktag.vcs.hg.MercurialVcsInfoGatherer;
 import net.mgorski.quicktag.vcs.svn.SvnVcsInfoGatherer;
 
 /**
@@ -9,7 +10,9 @@ import net.mgorski.quicktag.vcs.svn.SvnVcsInfoGatherer;
  * @author mgorski
  */
 public enum Vcs {
-  GIT(new Git17VcsInfoGatherer()), SVN(new SvnVcsInfoGatherer());
+    GIT(new Git17VcsInfoGatherer()),
+    SVN(new SvnVcsInfoGatherer()),
+    HG(new MercurialVcsInfoGatherer());
 
   /**
    * Parses string to enum.

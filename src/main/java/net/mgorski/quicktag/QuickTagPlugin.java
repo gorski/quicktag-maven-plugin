@@ -13,7 +13,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 
 /**
- * Quicktag Maven Plugin. This plugin provides robust way build info of your git or svn repository inside application.
+ * Quicktag Maven Plugin. This plugin provides robust way build info of your git/svn/hg repository inside application.
  * <p/>
  * See projects description at <a href="mgorki.net/projects/quicktag">project's page</a>
  *
@@ -36,7 +36,7 @@ public class QuickTagPlugin extends AbstractMojo
     Vcs activeVcs = Vcs.fromString(this.vcs);
     if (activeVcs == null){
       getLog().error("VCS has not been set. Please set <vcs> parameter to the correct VCS.");
-      getLog().error("Currently supported values: SVN, GIT");
+      getLog().error("Currently supported values: SVN, GIT, HG");
       return;
     } else {
       getLog().info(String.format("Maven Quicktag Plugin running with %s version control system.", activeVcs));
@@ -229,7 +229,7 @@ public class QuickTagPlugin extends AbstractMojo
    * Active VCS (default: git).
    * Specifies implicitly which VCS to use.
    * <p>
-   * Available choices: <code>git</code>, <code>svn</code>
+   * Available choices: <code>git</code>, <code>svn</code>, <code>hg</code>
    *
    * @parameter expression="${vcs}" default-value="git" 
    */
