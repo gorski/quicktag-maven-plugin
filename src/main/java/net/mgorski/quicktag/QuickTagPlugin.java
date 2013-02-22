@@ -3,6 +3,7 @@ package net.mgorski.quicktag;
 
 import net.mgorski.quicktag.api.*;
 import net.mgorski.quicktag.buildserver.atlassianbamboo.AtlassianBambooBuildInfoGatherer;
+import net.mgorski.quicktag.buildserver.jenkins.JenkinsBuildInfoGatherer;
 import net.mgorski.quicktag.chaining.ChainingBuildInfoEmitter;
 import net.mgorski.quicktag.chaining.ChainingBuildServerGatherer;
 import net.mgorski.quicktag.emission.VersionClassBasedBuildInfoEmitter;
@@ -11,6 +12,9 @@ import net.mgorski.quicktag.vcs.Vcs;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
+import org.codehaus.plexus.util.cli.CommandLineUtils;
+
+import java.io.IOException;
 
 /**
  * Quicktag Maven Plugin. This plugin provides robust way build info of your git/svn/hg repository inside application.
@@ -60,7 +64,18 @@ public class QuickTagPlugin extends AbstractMojo
        buildServerInfoGatherer = new ChainingBuildServerGatherer(new
         AtlassianBambooBuildInfoGatherer(bambooBuildKey, bambooBuildNumber, bambooBuildTimeStamp));
     } else {
-      getLog().info("Not using build server (Bamboo) configuration.");
+        try {
+            JenkinsBuildInfoGatherer jenkins = new JenkinsBuildInfoGatherer(CommandLineUtils.getSystemEnvVars());
+            if(jenkins.isJenkinsInUse())
+            {
+                buildServerInfoGatherer = new ChainingBuildServerGatherer(jenkins);
+            }else{
+                getLog().info("Not using build server (Bamboo, Jenkins) configuration.");
+            }
+        } catch (IOException e) {
+            getLog().debug(String.format("Error gathering information: " + e.getMessage()));
+        }
+
     }
 
     BuildInfoEmitter emitter =
