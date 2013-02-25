@@ -9,5 +9,6 @@ target/
 .DS_Store
 src/main/java/net/mgorski/output/
 .idea
+.hg
 
 atlassian-ide-plugin.xml
