@@ -4,6 +4,7 @@ package net.mgorski.quicktag;
 import net.mgorski.quicktag.api.*;
 import net.mgorski.quicktag.buildserver.atlassianbamboo.AtlassianBambooBuildInfoGatherer;
 import net.mgorski.quicktag.buildserver.jenkins.JenkinsBuildInfoGatherer;
+import net.mgorski.quicktag.buildserver.teamcity.TeamCityBuildInfoGatherer;
 import net.mgorski.quicktag.chaining.ChainingBuildInfoEmitter;
 import net.mgorski.quicktag.chaining.ChainingBuildServerGatherer;
 import net.mgorski.quicktag.emission.VersionClassBasedBuildInfoEmitter;
@@ -15,6 +16,7 @@ import org.apache.maven.plugin.logging.Log;
 import org.codehaus.plexus.util.cli.CommandLineUtils;
 
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Quicktag Maven Plugin. This plugin provides robust way build info of your git/svn/hg repository inside application.
@@ -65,12 +67,17 @@ public class QuickTagPlugin extends AbstractMojo
         AtlassianBambooBuildInfoGatherer(bambooBuildKey, bambooBuildNumber, bambooBuildTimeStamp));
     } else {
         try {
-            JenkinsBuildInfoGatherer jenkins = new JenkinsBuildInfoGatherer(CommandLineUtils.getSystemEnvVars());
+            Properties envVars = CommandLineUtils.getSystemEnvVars();
+            JenkinsBuildInfoGatherer jenkins = new JenkinsBuildInfoGatherer(envVars);
+            TeamCityBuildInfoGatherer teamCity = new TeamCityBuildInfoGatherer(envVars);
+
             if(jenkins.isJenkinsInUse())
             {
                 buildServerInfoGatherer = new ChainingBuildServerGatherer(jenkins);
+            }else if(teamCity.isTeamCityInUse()){
+                buildServerInfoGatherer = new ChainingBuildServerGatherer(teamCity);
             }else{
-                getLog().info("Not using build server (Bamboo, Jenkins) configuration.");
+                getLog().info("Not using build server (Bamboo, Jenkins, TeamCity) configuration.");
             }
         } catch (IOException e) {
             getLog().debug(String.format("Error gathering information: " + e.getMessage()));
