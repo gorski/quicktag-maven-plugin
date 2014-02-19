@@ -9,6 +9,7 @@
   <url>http://mgorski.net/projects/quicktag</url>
 
   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <quicktag.version>2.1.4</quicktag.version>
   </properties>
 
