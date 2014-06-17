@@ -1,112 +1,178 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>net.mgorski.quicktag</groupId>
-  <artifactId>quicktag</artifactId>
-  <packaging>maven-plugin</packaging>
-  <version>2.1.4</version>
-  <name>Quicktag Maven Plugin</name>
-  <url>http://mgorski.net/projects/quicktag</url>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.mgorski.quicktag</groupId>
+    <artifactId>quicktag</artifactId>
+    <packaging>maven-plugin</packaging>
+    <version>2.1.5-SNAPSHOT</version>
+    <name>Quicktag Maven Plugin</name>
+    <url>https://code.google.com/p/quicktag-maven-plugin</url>
+    <description>Quicktag plugin - embeds VCS/build info inside your project</description>
 
-  <properties>
-      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <quicktag.version>2.1.4</quicktag.version>
-  </properties>
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-plugin-api</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>exec-maven-plugin</artifactId>
-      <version>1.1</version>
-    </dependency>
-  </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.0.2</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
-      </plugin>
+    <licenses>
+        <license>
+            <name>GNU GPL v3</name>
+            <url>http://www.gnu.org/licenses/gpl.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-    </plugins>
-    <extensions>
-      <!-- Allows deploy to the FTP location -->
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-ftp</artifactId>
-        <version>2.4</version>
-      </extension>
-    </extensions>
-  </build>
+    <scm>
+        <connection>scm:git:https://code.google.com/p/quicktag-maven-plugin/</connection>
+        <developerConnection>scm:git:https://code.google.com/p/quicktag-maven-plugin/</developerConnection>
+        <url>http://code.google.com/p/quicktag-maven-plugin/source/browse</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <name>Marcin Górski</name>
+            <url>mgorski.net</url>
+        </developer>
+        <developer>
+            <name>Bernd Haug</name>
+            <url>berndhaug.net</url>
+        </developer>
+        <developer>
+            <name>Malachi de Ælfweald</name>
+            <url>linkedin.com/in/malachid</url>
+        </developer>
+    </developers>
 
 
-  <profiles>
-    <profile>
-      <id>mgorskinet</id>
-      <!-- Build profile w/configuration for my own repository -->
-      <distributionManagement>
-        <repository>
-          <id>mgorski-ftp</id>
-          <url>ftp://mgorski.net</url>
-        </repository>
-      </distributionManagement>
-    </profile>
-    <profile>
-      <id>self-test</id>
-      <build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <quicktag.version>2.1.5-SNAPSHOT</quicktag.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.1</version>
+        </dependency>
+    </dependencies>
+    <build>
         <plugins>
-          <plugin>
-            <groupId>net.mgorski.quicktag</groupId>
-            <artifactId>quicktag</artifactId>
-            <version>${quicktag.version}</version>
-            <executions>
-              <execution>
-                <phase>generate-sources</phase>
-                <goals>
-                  <goal>quicktag</goal>
-                </goals>
-              </execution>
-            </executions>
-            <configuration>
-              <!-- optional -->
-              <!--<gitRepositoryPath>.git</gitRepositoryPath>-->
-              <!-- optional -->
-              <!--<svnPath>.svn</svnPath>-->
-              <!-- optional -->
-              <!--<hgPath>.hg</hgPath>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
 
-              <!-- required, must exist -->
-              <outputPackage>net.mgorski.output</outputPackage>
-
-              <!-- optional, for multi module projects -->
-              <outputDirectory>${project.basedir}/src/main/java/</outputDirectory>
-            </configuration>
-          </plugin>
         </plugins>
-      </build>
-      <pluginRepositories>
-        <pluginRepository>
-          <snapshots>
-            <enabled>true</enabled>
-          </snapshots>
-          <id>mgorski.net</id>
-          <url>http://maven.mgorski.net</url>
-        </pluginRepository>
-        <pluginRepository>
-          <id>mojo-executor-repository</id>
-          <name>Mojo Executor Repository for Maven</name>
-          <url>http://twdata-m2-repository.googlecode.com/svn/</url>
-        </pluginRepository>
-      </pluginRepositories>
-    </profile>
-  </profiles>
+        <extensions>
+            <!-- Allows deploy to the FTP location -->
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ftp</artifactId>
+                <version>2.4</version>
+            </extension>
+        </extensions>
+    </build>
+
+
+    <profiles>
+        <profile>
+            <id>self-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>net.mgorski.quicktag</groupId>
+                        <artifactId>quicktag</artifactId>
+                        <version>${quicktag.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>quicktag</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!-- optional -->
+                            <!--<gitRepositoryPath>.git</gitRepositoryPath>-->
+                            <!-- optional -->
+                            <!--<svnPath>.svn</svnPath>-->
+                            <!-- optional -->
+                            <!--<hgPath>.hg</hgPath>-->
+
+                            <!-- required, must exist -->
+                            <outputPackage>net.mgorski.output</outputPackage>
+
+                            <!-- optional, for multi module projects -->
+                            <outputDirectory>${project.basedir}/src/main/java/</outputDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <additionalparam>-Xdoclint:none</additionalparam>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

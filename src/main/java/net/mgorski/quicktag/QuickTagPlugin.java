@@ -20,7 +20,7 @@ import java.util.Properties;
 
 /**
  * Quicktag Maven Plugin. This plugin provides robust way build info of your git/svn/hg repository inside application.
- * <p/>
+ * <p>
  * See projects description at <a href="mgorki.net/projects/quicktag">project's page</a>
  *
  * @author Marcin Gorski (mgorski.net)
@@ -35,7 +35,7 @@ public class QuickTagPlugin extends AbstractMojo
   /**
    * Main method, called when plugin is being executed.
    *
-   * @throws MojoExecutionException
+   * @throws MojoExecutionException An exception occurring during the execution of a plugin.
    */
   public void execute() throws MojoExecutionException {
 

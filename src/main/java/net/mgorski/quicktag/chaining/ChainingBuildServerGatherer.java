@@ -38,7 +38,7 @@ public class ChainingBuildServerGatherer implements BuildServerBuildInformationG
 
   /**
    * @return The result of the first gatherer that is non-<code>null</code>.
-   * @param log
+   * @param log message to be logged
    */
   @Override
   public BuildServerBuildInfo gatherBuildServerInfo(Log log) {
