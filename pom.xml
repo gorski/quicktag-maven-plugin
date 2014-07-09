@@ -4,7 +4,7 @@
     <groupId>net.mgorski.quicktag</groupId>
     <artifactId>quicktag</artifactId>
     <packaging>maven-plugin</packaging>
-    <version>2.1.5-SNAPSHOT</version>
+    <version>2.1.5</version>
     <name>Quicktag Maven Plugin</name>
     <url>https://code.google.com/p/quicktag-maven-plugin</url>
     <description>Quicktag plugin - embeds VCS/build info inside your project</description>
@@ -13,6 +13,7 @@
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
+        <relativePath></relativePath>
     </parent>
 
     <licenses>
@@ -47,7 +48,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <quicktag.version>2.1.5-SNAPSHOT</quicktag.version>
+        <quicktag.version>2.1.5</quicktag.version>
     </properties>
 
     <dependencies>
