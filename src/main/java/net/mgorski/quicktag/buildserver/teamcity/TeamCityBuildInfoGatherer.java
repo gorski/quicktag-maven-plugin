@@ -17,7 +17,7 @@ import java.util.Properties;
 public class TeamCityBuildInfoGatherer  implements BuildServerBuildInformationGatherer
 {
     private static final String DEFAULT = "N/A";
-    private static final String FMT_DATE = "YYYY-MM-DD_hh-mm-ss";
+    private static final String FMT_DATE = "yyyy-MM-DD_hh-mm-ss";
     private String buildId, buildPlan, buildTime;
 
     public TeamCityBuildInfoGatherer(Properties environment)
