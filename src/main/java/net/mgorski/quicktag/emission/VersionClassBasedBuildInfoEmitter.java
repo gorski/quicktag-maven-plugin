@@ -81,58 +81,46 @@ public class VersionClassBasedBuildInfoEmitter implements BuildInfoEmitter {
           buildServerInfo == null ? NA : buildServerInfo.getBuildId(),
           bannerDirtyString);
 
-      final String banner = String.format("%s-%s %s ",
-        mavenInfo.getVersion(),
-        Boolean.TRUE.equals(sourceDirty) ? vcsInfo.getVersion() +"**" : vcsInfo.getVersion(),
-        quicktagInfo.getDate()
-      );
-      
-      String output = String.format(
-          "package %s;\n" +
-              "\n" +
-              "/**\n" +
-              " * Auto-generated file, contains project and version control state info.\n" +
-              " */\n" +
-              "public final class %s {\n" +
-              "  public static String PLUGIN_BUILD_TIME = \"%s\";\n" +
-              "\n" +
-              "  public static String PROJECT_NAME = \"%s\";\n" +
-              "  public static String PROJECT_GROUP = \"%s\";\n" +
-              "  public static String PROJECT_ARTIFACT = \"%s\";\n" +
-              "  public static String PROJECT_VERSION = \"%s\";" +
-              "\n" +
-              "  public static String SOURCE_VERSION = \"%s\";\n" +
-              "  public static String SOURCE_BRANCH = \"%s\";\n" +
-              "  public static Boolean SOURCE_DIRTY = %s;\n" +
-              "  public static String SOURCE_WORKING_COPY = \"%s\";\n" +
-              "\n" +
-              "  public static String SERVER_BUILD_PLAN = \"%s\";\n" +
-              "  public static String SERVER_BUILD_ID = \"%s\";\n" +
-              "  public static String SERVER_BUILD_TIME = \"%s\";\n" +
-              "\n" +
-              "  public static String BANNER_FULL = \"%s\";\n" +
-              "  public static String BANNER = \"%s\";\n" +
-              "}\n",
-          outputPackage, className,
-          quicktagInfo.getDate(),
-          mavenInfo.getName(), mavenInfo.getGroupId(), mavenInfo.getArtifactId(), mavenInfo.getVersion(),
-          vcsInfo.getVersion(), vcsInfo.getBranch(), sourceDirtyString, vcsInfo.getWorkingCopyInformation(),
-          buildServerInfo == null ? NA : buildServerInfo.getBuildPlan(),
-          buildServerInfo == null ? NA : buildServerInfo.getBuildId(),
-          buildServerInfo == null ? NA : buildServerInfo.getServerBuildTime(),
-          detailed_banner,
-          banner
-      );
-      try {
-        FileWriter fileWriter = new FileWriter(outFile);
-        BufferedWriter out = new BufferedWriter(fileWriter);
-        out.write(output);
-        out.close();
-      } catch (Exception e) {
-        log.error("Error: " + e.getMessage());
-      }
-    } else {
-      log.error("File or location not writable: " + outputPath);
+            final String banner = String.format("%s-%s %s ", mavenInfo.getVersion(),
+                    Boolean.TRUE.equals(sourceDirty) ? vcsInfo.getVersion() + "**" : vcsInfo.getVersion(),
+                    quicktagInfo.getDate());
+
+            final String output = String.format("package %s;\n"
+                    + "\n"
+                    + "/**\n"
+                    + " * Auto-generated file, contains project and version control state info.\n"
+                    + " */\n"
+                    + "public final class %s {\n" //
+                    + "  public static final String PLUGIN_BUILD_TIME = \"%s\";\n" + "\n" //
+                    + "  public static final String PROJECT_NAME = \"%s\";\n" //
+                    + "  public static final String PROJECT_GROUP = \"%s\";\n" //
+                    + "  public static final String PROJECT_ARTIFACT = \"%s\";\n"  //
+                    + "  public static final String PROJECT_VERSION = \"%s\";" + "\n"  //
+                    + "  public static final String SOURCE_VERSION = \"%s\";\n" //
+                    + "  public static final String SOURCE_BRANCH = \"%s\";\n" //
+                    + "  public static final Boolean SOURCE_DIRTY = %s;\n" //
+                    + "  public static final String SOURCE_WORKING_COPY = \"%s\";\n" + "\n" //
+                    + "  public static final String SERVER_BUILD_PLAN = \"%s\";\n" //
+                    + "  public static final String SERVER_BUILD_ID = \"%s\";\n" //
+                    + "  public static final String SERVER_BUILD_TIME = \"%s\";\n" + "\n" //
+                    + "  public static final String BANNER_FULL = \"%s\";\n" //
+                    + "  public static final String BANNER = \"%s\";\n" + "}\n", //
+                    outputPackage, className,
+                    quicktagInfo.getDate(), mavenInfo.getName(), mavenInfo.getGroupId(), mavenInfo.getArtifactId(),
+                    mavenInfo.getVersion(), vcsInfo.getVersion(), vcsInfo.getBranch(), sourceDirtyString,
+                    vcsInfo.getWorkingCopyInformation(), buildServerInfo == null ? NA : buildServerInfo.getBuildPlan(),
+                            buildServerInfo == null ? NA : buildServerInfo.getBuildId(), buildServerInfo == null ? NA
+                                    : buildServerInfo.getServerBuildTime(), detailed_banner, banner);
+            try {
+                final FileWriter fileWriter = new FileWriter(outFile);
+                final BufferedWriter out = new BufferedWriter(fileWriter);
+                out.write(output);
+                out.close();
+            } catch (final Exception e) {
+                log.error("Error: " + e.getMessage());
+            }
+        } else {
+            log.error("File or location not writable: " + outputPath);
+        }
     }
   }
-}
