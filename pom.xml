@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.mgorski.quicktag</groupId>
     <artifactId>quicktag</artifactId>
@@ -13,7 +12,7 @@
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
         <version>7</version>
-        <relativePath></relativePath>
+        <relativePath />
     </parent>
 
     <licenses>
@@ -48,7 +47,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <quicktag.version>2.1.6</quicktag.version>
+        <quicktag.version>2.1.6-SNAPSHOT</quicktag.version>
     </properties>
 
     <dependencies>
@@ -168,6 +167,7 @@
                                 </goals>
                                 <configuration>
                                     <additionalparam>-Xdoclint:none</additionalparam>
+                                    <failOnError>false</failOnError>
                                 </configuration>
                             </execution>
                         </executions>
