@@ -83,3 +83,11 @@ public final class Version {
 <%= Version.BANNER %>
 ```
 5) Start your app. Here is how it looks like in sample application:
+
+## License
+Quicktag-Maven-Plugin
+
+https://code.google.com/p/quicktag-maven-plugin/
+Open Source / Code license GNU GPL v3
+
+2014.
