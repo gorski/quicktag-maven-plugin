@@ -1,6 +1,9 @@
 # quicktag-maven-plugin
 Plugin allows you easily embed status of your repository into the project while building with Maven. In the process-resources phase plugin will simply generate Java class with static String fields that describe build time, version control state (and build server info, if present). This will enable you to easily distinguish which version of the project is currently deployed.
 
+
+![alt tag](https://dl.dropboxusercontent.com/u/3118248/quicktag.png)
+
 ## Version
 Current stable version: 2.1.5 (10.06.2014).
 
